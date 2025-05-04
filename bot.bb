@@ -9,7 +9,7 @@ user_total = {}
 user_last_time = {}
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text("Привет, напиши /ebembetmena, чтобы узнать сколько ты залил в бетмена 🍆")
+    await update.message.reply_text("Прететтт напиши /ebembetmena, чтобы узнать сколько ты залил в бетмена 🍆")
 
 async def ebembetmena(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_id = update.effective_user.id
@@ -40,9 +40,30 @@ async def ebembetmena(update: Update, context: ContextTypes.DEFAULT_TYPE):
         f"Ты залил в бетмена {size} л. спермы {emojis}\nВсего ты залил {total} л. 🧪"
     )
 
-app = ApplicationBuilder().token("7356003536:AAF5LWvzC4DM9dngb1Ckfl6bhvihCvNWIC0").build()
+async def top(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if not user_total:
+        await update.message.reply_text("Пока что никто ничего не залил 🤷‍♂️")
+        return
+
+    # Сортировка пользователей по объему
+    top_users = sorted(user_total.items(), key=lambda x: x[1], reverse=True)[:10]
+
+    message = "🏆 Топ 10 по заливам в бетмена:\n"
+    for i, (user_id, total) in enumerate(top_users, start=1):
+        try:
+            user = await context.bot.get_chat(user_id)
+            name = user.first_name or "Неизвестный"
+        except:
+            name = "Неизвестный"
+        message += f"{i}. {name} — {round(total, 1)} л. 🧪\n"
+
+    await update.message.reply_text(message)
+
+# Запуск бота
+app = ApplicationBuilder().token("7572946046:AAFV6W3x1OTPKjFzQmoklL7ndE26NvGuHqI").build()
 
 app.add_handler(CommandHandler("start", start))
 app.add_handler(CommandHandler("ebembetmena", ebembetmena))
+app.add_handler(CommandHandler("top", top))
 
 app.run_polling()
